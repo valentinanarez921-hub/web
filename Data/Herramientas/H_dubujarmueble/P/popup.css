@@ -1,0 +1,419 @@
+/* popup.css - limpio y sin duplicados */
+
+/* Overlay / ventana */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  display: none; /* JS controla visibilidad */
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(3px);
+  z-index: 9999;
+  padding: min(20px, 5vw); /* margen que se reduce gradualmente */
+}
+.popup-overlay.show { display: flex !important; }
+
+.popup-window {
+  
+  width: 100%;
+  min-width: 600px;
+  max-width: min(90vw, calc(100% - 2 * min(20px, 5vw)));
+  height: 100%;
+  max-height: min(90vh, calc(100% - 2 * min(20px, 5vw)));
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* smaller popup window for edit */
+.popup-window.small {
+  width: 100%;
+  min-width: 600px;
+  max-width: min(90vw, calc(100% - 2 * min(20px, 5vw)));
+  height: 100%;
+  max-height: min(90vh, calc(100% - 2 * min(20px, 5vw)));
+  overflow: auto;
+}
+
+/* z-index for edit popup to appear on top */
+#popup-editar {
+  z-index: 99999 !important;
+}
+
+#popup-editar .popup-content {
+  height: calc(100% - 65px);
+}
+
+#popup-editar .popup-edit-body {
+  height: calc(100% - 221px) !important;
+  box-sizing: border-box !important;
+}
+
+/* Header */
+.popup-header {
+  padding: 12px 16px;
+  background: #0077b6;
+  color: white;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+}
+.popup-header h3 { margin: 0; font-size: 18px; }
+.popup-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* toolbar (debajo del header) */
+.toolbar {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ddd;
+  align-items: center;
+  box-sizing: border-box;
+}
+.tb-btn {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.tb-btn i { pointer-events: none; }
+
+.tb-btn.activo {
+  background: #0080ff !important;
+  color: white !important;
+  border-color: #0080ff !important;
+}
+
+/* select de perspectivas con estilo tb-btn */
+#tool-view {
+  width: 40px;
+  height: 40px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#tool-view:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+/* popup content area */
+
+body.popup-open {
+  overflow: hidden; /* bloquea scroll vertical y horizontal */
+}
+
+.popup-content {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  height: calc(100% - 65px);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* left panel */
+#popup-left {
+  flex: 0 0 23%;
+  min-width: 120px;
+  background: #f8f8f8;
+  border-right: 1px solid #e0e0e0;
+  padding: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  border-radius: 6px;
+}
+#popup-left h4 { margin: 6px 0 12px; }
+
+/* right panel */
+#popup-right {
+  flex: 0 0 23%;
+  min-width: 120px;
+  background: #f8f8f8;
+  border-left: 1px solid #e0e0e0;
+  padding: 10px;
+  overflow-y: auto;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+/* Grid de botones: mostrar en filas responsivas */
+#popup-left .buttons-grid,
+#popup-left .calado-list,
+#popup-left .calado-buttons,
+#cut-controls .calado-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  gap: 8px;
+  align-items: stretch;
+}
+
+#popup-left .buttons-grid button,
+#popup-left .calado-list button,
+#popup-left .calado-buttons button,
+#cut-controls .calado-list button {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Utilidad: aplicar grid de 4 columnas a cualquier contenedor */
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+
+/* Edit-tool (botones superiores: Radio / Ángulo / Calado) - estado activo */
+.edit-tool.activo {
+  background: #007bff !important;
+  color: #fff !important;
+  border-color: #0056b3 !important;
+}
+
+/* Botones del panel izquierdo: solo aplicar azul cuando tengan la clase activo/activo visual */
+#popup-left button.activo,
+#popup-left .tb-btn.activo,
+#popup-left .edit-tool.activo {
+  background: #007bff !important;
+  color: #fff !important;
+  border-color: #0056b3 !important;
+}
+
+/* Asegurar que cualquier botón dentro del popup con clase .activo se muestre en azul
+   (incluye botones del panel de calados: mano, líneas, medidas exactas) */
+.popup-window button.activo,
+#cut-controls button.activo,
+#popup-editar button.activo,
+.popup-edit-body button.activo {
+  background: #007bff !important;
+  color: #fff !important;
+  border-color: #0056b3 !important;
+}
+
+/* Cuando el panel de calado medido está 'vacío', ocultamos su contenido pero mantenemos el ancho */
+#cut-exact-panel.empty > * {
+  display: none !important;
+}
+
+/* pieza list */
+.popup-pieza-item {
+  display:flex;
+  gap:8px;
+  padding:8px;
+  background:#fff;
+  border-radius:6px;
+  margin-bottom:8px;
+  align-items:center;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.02) inset;
+}
+.ppi-info {
+  flex:1;
+  font-size:13px;
+  line-height:1.1;
+}
+.ppi-info strong { display:block; margin-bottom:4px; }
+.ppi-mini { width:24px; height:34px; display:flex; align-items:center; justify-content:center; }
+
+/* grid wrapper + grid area */
+#gridWrapper {
+  flex: 1 1 auto;
+  min-width: 200px;
+  height: 100%;
+  border: 1px solid #aaa;
+  overflow: hidden;
+  position: relative;
+}
+
+/* lineas en el grid area */
+#snap-line-x, #snap-line-y {
+    position: absolute;
+    background: rgba(0, 150, 255, 0.8);
+    pointer-events: none;
+    display: none;
+    z-index: 99999;
+}
+
+#snap-line-x {
+    width: 2px;
+    height: 100%;
+}
+
+#snap-line-y {
+    height: 2px;
+    width: 100%;
+}
+
+
+#gridArea {
+  width: 100%;
+  height: 100%;
+  background-size: 40px 40px;
+  background-position: 0 0;
+}
+
+
+/* piezas dibujadas */
+.pieza-dibujada {
+  position: absolute;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  user-select: none;
+  cursor: grab;
+}
+
+
+
+
+/*barra de herramientas flotantes */
+#popup-tools {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+/* BOTONES */
+/* boton agregar pieza */
+.ppi-add {
+  padding: 6px 12px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.tb-btn #snap-state {
+    color: #b00;
+    font-weight: bold;
+}
+
+.tb-btn.activo #snap-state {
+    color: #0b0;
+}
+
+/* botón de herramienta activo (aplica para tool-editar y similares) */
+.tb-btn.activo {
+  background: #007bff;
+  color: #fff;
+  border-color: #0056b3;
+}
+
+/* regla específica para el lápiz por si se necesita estilo extra */
+#tool-editar.activo {
+  background: #007bff;
+  color: #fff;
+  border-color: #0056b3;
+}
+
+
+
+
+
+
+
+/* css de mouse */
+
+/* borde azul cuando está seleccionada */
+.pieza-seleccionada {
+  outline: 3px solid #007bff !important;
+}
+
+/* marco de selección */
+.marco-seleccion {
+  position: fixed;
+  border: 2px dashed #007bff;
+  background: rgba(0, 123, 255, 0.1);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* activar botón */
+#tool-mouse.activo {
+  background: #007bff;
+  color: white;
+}
+
+/* ===========================================
+   CURSOR VIRTUAL — Cursor REAL siempre oculto
+   =========================================== */
+
+/* Nada dentro del área de trabajo puede mostrar cursor */
+#gridWrapper,
+#gridWrapper * {
+  cursor: none !important;
+}
+
+/* Grid principal */
+#gridArea,
+#gridArea * {
+  cursor: none !important;
+}
+
+/* Piezas dibujadas */
+.pieza-dibujada,
+.pieza-dibujada * {
+  cursor: none !important;
+}
+
+
+/* SOBREESCRIBE display:none y posiciona el input donde tu JS lo coloque */
+input[type="color"] {
+  display: block !important;      /* anula display: none del JS */
+  position: absolute !important;  /* importante: tu JS sobreescribirá left/top */
+  width: 0px !important;         /* tamaño pequeño */
+  height: 0px !important;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  opacity: 0 !important;          /* invisible pero presente en el DOM */
+  cursor: pointer;                /* opcional */
+  z-index: 9999 !important;
+}
+
+/* Evitar scrollbars en el área de edición: el canvas debe encajar exactamente */
+#edit-grid {
+  overflow: hidden !important;
+}
+
+#edit-grid canvas,
+.edit-preview canvas,
+#edit-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+  box-sizing: border-box !important; /* incluye border en las dimensiones para evitar overflow */
+}
+
+/* Estilos para inputs deshabilitados */
+input:disabled {
+  background-color: #e8e8e8 !important;
+  color: #999 !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+

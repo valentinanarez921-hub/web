@@ -1,0 +1,523 @@
+/* copia.css - estilo completo */
+
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  background: #f2f2f2;
+  margin: 0;
+}
+
+.page-container {
+  max-width: 1100px;
+  margin: auto;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.btn {
+  padding: 10px 16px;
+  border: none;
+  background: #0080ff;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn.ghost {
+  background: #ccc;
+  color: #000;
+}
+
+.templates-area {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.template-block {
+  display: flex;
+  gap: 20px;
+}
+
+/* A4 pages container */
+.a4-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Una hoja A4 */
+.a4-sheet {
+  width: 210mm;
+  height: 297mm;
+  border: 1px solid #ccc;
+  background: #fff;
+  position: relative;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow: visible !important; /* <---- CAMBIADO  */
+  z-index: 1; /* <---- nuevo */
+}
+
+.a4-exported-drawings {
+  position: absolute;
+  inset: 10px 10px auto auto;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+/* contenido superior */
+.a4-content {
+  padding: 6px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.a4-right-draw {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+  position: relative;
+}
+
+/* Panel lateral */
+.side-panel {
+  width: 320px;
+  background: #fafafa;
+  border: 1px solid #dcdcdc;
+  padding: 12px;
+  border-radius: 4px;
+  height: 297mm; /* igual alto visual para facilidad */
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+/* lista de módulos en side-panel */
+#modulos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.modulo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 14px;
+  justify-content: space-between;
+}
+
+/* Meta table */
+.meta-table {
+  border-collapse: collapse;
+  margin-bottom: 8px;
+}
+
+.meta-table input,
+.meta-table {
+  width: 62px;
+}
+
+.meta-table th,
+.meta-table td,
+.meta-table tr {
+  border: 1px solid #dcdcdc;
+  padding: 4px;
+  text-align: center;
+  font-size: 85%;
+}
+
+/* cuadro de cantos */
+.cuadro-wrap {
+  position: relative;
+  margin: 8px auto 10px auto;
+  width: fit-content;
+}
+
+.cuadro-label-top {
+  position: absolute;
+  top: -18px;
+  left: 10px;
+  font-size: 10px;
+  color: #666;
+}
+
+.cuadro-label-right {
+  position: absolute;
+  right: 8px;
+  top: 10px;
+  font-size: 10px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  color: #666;
+}
+
+.cuadro {
+  width: 60px;
+  height: 60px;
+  background: #fff;
+  border: 1px solid #000;
+  position: relative;
+  cursor: pointer;
+}
+
+.cuadro .lado {
+  position: absolute;
+  background: transparent;
+  transition: 0.12s;
+}
+
+.cuadro .lado.top {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+.cuadro .lado.right {
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+}
+.cuadro .lado.bottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+.cuadro .lado.left {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+}
+
+/* seleccionado */
+.cuadro .lado.active {
+  background: crimson !important;
+}
+
+/* panel botones, warnings */
+.name-warning,
+.note-warning {
+  display: none;
+  color: crimson;
+  font-size: 12px;
+}
+
+.panel-buttons {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+/* filas horizontales dentro de modulo-datos */
+.modulo-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.trash-btn-row {
+  margin-left: 0px; /* movelo a la izquierda */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: crimson;
+  padding: 0;
+}
+
+/* añadimos una columna pequeña para el icono de papelera/editar */
+/* añadimos una columna pequeña para el icono de papelera/editar */
+.embedded-right-row {
+  display: grid;
+  grid-template-columns: 45px 45px 50px 40px 100px 50px;
+  align-items: stretch;
+  padding: 0px 0px 6px 0px;
+
+  column-gap: 0px;
+  font-size: 13px;
+  position: relative; /* AGREGADO */
+}
+
+.embedded-right-row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 393px;
+  bottom: 0;
+  height: 1px;
+  background: #615f5f;
+  pointer-events: none;
+}
+
+.embedded-right-row > div:not(.icon-col) {
+  padding-right: 8px;
+  padding-left: 8px;
+  border-right: 2px solid #000;
+  display: flex;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+.embedded-right-row > div:nth-child(2) {
+  border-left: 2px solid #000;
+}
+
+/* columna de iconos */
+.icon-col {
+  position: absolute;
+  left: -75px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 999999 !important; /* <---- AUMENTADO */
+}
+
+/* iconos */
+.icon-col button {
+  background: #fff;
+  border: 1px solid #888;
+  border-radius: 4px;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.embedded-right-row .icon-col {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* mini cuadro de lados (dentro de fila) */
+.lado-mini {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #000;
+  position: relative;
+  display: inline-block;
+}
+
+.lado-mini .lado {
+  position: absolute;
+  background: transparent;
+}
+
+.lado-mini .lado.top {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+.lado-mini .lado.bottom {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+.lado-mini .lado.left {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+}
+.lado-mini .lado.right {
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 3px;
+}
+
+/* headers dentro de cada módulo */
+.modulo-marco {
+  margin-bottom: 6px;
+}
+
+.modulo-titulo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+}
+
+.modulo-headers {
+  display: grid;
+  grid-template-columns: 45px 45px 50px 40px 100px 50px 50px;
+  font-weight: bold;
+  padding: 6px 0;
+  border-bottom: 2px solid #000;
+  margin-top: 4px;
+  font-size: 13px;
+  column-gap: 0px;
+}
+
+.modulo-headers > div {
+  padding-right: 8px;
+  padding-left: 8px;
+  border-right: 2px solid #000;
+}
+
+.modulo-headers > div:first-of-type {
+  border-left: 2px solid #000;
+}
+
+.modulo-headers > div:last-of-type {
+  border-right: 2px solid #000;
+}
+
+/* titulo dentro A4 */
+.modulo-marco h4 {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+/* iconos del titulo */
+.module-title-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* editar inline inputs */
+.row-edit input[type="text"],
+.row-edit input[type="number"] {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 13px;
+  padding: 4px;
+}
+
+/* alerta de campo demasiado largo */
+.input-error {
+  background: #ffb3b3 !important;
+  border: 1px solid red !important;
+}
+
+/* impresión: solo mostrar A4 y ocultar controles/panel */
+@media print {
+  body {
+    background: white;
+  }
+  .controls,
+  footer,
+  .side-panel {
+    display: none !important;
+  }
+  /* asegura que la A4 ocupe la página impresa */
+  .a4-sheet {
+    page-break-after: always !important;
+    width: 100%;
+    height: auto;
+    border: none;
+  }
+}
+
+.btn {
+  padding: 7px;
+}
+
+/* ===== ESTILOS PARA DIBUJOS EXPORTADOS ===== */
+.dibujo-wrapper {
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 10;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.dibujo-wrapper.editing {
+  background-color: #f5f5f5 !important;
+  border: 1px solid #c8c8c8 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  padding: 0 !important;
+}
+
+.dibujo-wrapper.applied {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.dibujo-wrapper:hover {
+  box-shadow: none !important;
+}
+
+.dibujo-wrapper > div:first-child {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.dibujo-wrapper button {
+  background: #f0f0f0 !important;
+  border: 1px solid #999 !important;
+  padding: 2px 4px !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+.dibujo-wrapper button:hover {
+  background: #e0e0e0 !important;
+  border-color: #666 !important;
+}
+
+.dibujo-wrapper button:active {
+  background: #d0d0d0 !important;
+}
+
+/* Redimensionador cursor */
+.dibujo-wrapper.resizing {
+  cursor: se-resize !important;
+}
+
+/* Estilos para el popup tools */
+#popup-tools {
+  flex-wrap: wrap;
+}
+
+#popup-tools button {
+  padding: 8px 12px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s ease;
+}
+
+#popup-tools button:hover {
+  background: #0056b3;
+}
+
+#popup-tools button:active {
+  background: #003d82;
+}

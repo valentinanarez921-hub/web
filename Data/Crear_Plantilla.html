@@ -1,0 +1,1212 @@
+<!-- HTML -->
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crear plantilla</title>
+    <link rel="icon" href="icon.ico" type="image/x-icon" />
+    <link rel="icon" href="icono.png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="Hoja_A4/hojaA4.css" />
+    <link rel="stylesheet" href="Herramientas/H_dubujarmueble/P/popup.css" />
+
+    <style>
+      #tool-medir.activo,
+      #tool-crear-linea.activo {
+        background-color: #0080ff !important;
+        color: white !important;
+      }
+    </style>
+
+    <!-- html2canvas (para captura de canvas) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- jsPDF (para generación de PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- html2pdf (para exportar a PDF) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  </head>
+  <body>
+    <header class="tm-site-header">
+      <h1>
+        <span class="tm-color-primary"></span>
+        <span class="tm-color-gray-2"></span>
+      </h1>
+      <em class="tm-tagline tm-color-light-gray"></em>
+    </header>
+
+    <div class="tm-container page-container">
+      <h2 class="tm-color-primary page-title">Crear Plantilla</h2>
+      <p
+        id="proyecto-actual-label"
+        style="color: #999; margin: -10px 0 15px 0; font-size: 13px"
+      >
+        Sin proyecto activo
+      </p>
+
+      <div class="controls">
+        <button id="inicio" class="btn" title="Volver al inicio">Inicio</button>
+        <button id="add-block" class="btn">Añadir bloque A4</button>
+        <button id="remove-last" class="btn ghost">
+          Eliminar último bloque A4
+        </button>
+        <button id="imprimir" class="btn" title="Optimizar">Optimizar</button>
+        <button id="exportarPDF" class="btn ghost">Exportar A4 a PDF</button>
+        <button id="vistaPreviaPDF" class="btn ghost">Vista previa PDF</button>
+        <button id="guardarTodo" class="btn" title="Guardar plantilla y dibujo">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+        <button
+          id="cargarTodo"
+          class="btn ghost"
+          title="Cargar plantilla guardada"
+        >
+          <i class="fas fa-upload"></i> Cargar
+        </button>
+        <button
+          id="gestionarTodo"
+          class="btn ghost"
+          title="Gestionar guardados"
+        >
+          <i class="fas fa-trash-alt"></i> Gestionar
+        </button>
+        <button id="dibujarMueble" class="btn">Dibujar mueble</button>
+      </div>
+
+      <div id="templates" class="templates-area">
+        <!-- UN template-block que contendrá una pila de páginas A4 (a4-pages) y la side-panel -->
+        <div class="template-block">
+          <div class="a4-pages">
+            <!-- Página A4 inicial -->
+            <div class="a4-sheet" data-page="1">
+              <div class="a4-content">
+                <div class="a4-left"><strong>Nombre proyecto</strong></div>
+                <div class="a4-right-draw">
+                  <em class="draw-hint">Área para dibujo (AQUÍ)</em>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="side-panel">
+            <h3>Marco de medidas</h3>
+
+            <div class="modulo-list-wrap">
+              <div id="modulos-list">
+                <!-- aquí aparecerán los módulos creados (lista) -->
+              </div>
+            </div>
+
+            <div class="datos-modulo">
+              <p>Módulo: <strong class="modulo-actual">-</strong></p>
+
+              <style>
+                /* ====== AJUSTES CREAR MÓDULO ====== */
+                .modulo-header {
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  margin-bottom: 12px;
+                }
+                .modulo-nombre {
+                  /* AJUSTABLES: */
+                  width: 150px; /* Ancho del campo */
+                  height: 28px; /* Alto del campo */
+                  padding: 7px 6px; /* Padding interno */
+                  font-size: 12px; /* Tamaño de texto */
+                  /* FIN AJUSTABLES */
+                  box-sizing: border-box;
+                  border: 1px solid #ccc;
+                  border-radius: 3px;
+                }
+
+                /* ====== AJUSTES DE TABLA ====== */
+                .meta-table {
+                  width: 100%;
+                  table-layout: fixed;
+                  border-collapse: collapse;
+                }
+                .meta-table th,
+                .meta-table td {
+                  border: 1px solid #ddd;
+                  padding: 6px 4px;
+                }
+
+                /* Ancho de columnas */
+                .col-cant {
+                  width: 25px;
+                }
+                .col-largo {
+                  width: 30px;
+                }
+                .col-ancho {
+                  width: 30px;
+                }
+                .col-cantl {
+                  width: 30px;
+                }
+                .col-canta {
+                  width: 30px;
+                }
+
+                /* Alto de filas */
+                .row-header {
+                  height: 28px;
+                }
+                .row-datos {
+                  height: 32px;
+                }
+                .row-prof {
+                  height: 32px;
+                }
+                .row-nombre {
+                  height: 32px;
+                }
+                .row-notas {
+                  height: 32px;
+                }
+
+                /* Inputs */
+                .meta-table input {
+                  width: 100%;
+                  height: 100%;
+                  box-sizing: border-box;
+                  border: none;
+                  padding: 2px;
+                }
+                .meta-table input[type="number"] {
+                  text-align: center;
+                }
+                .meta-table textarea {
+                  border: none;
+                  padding: 2px;
+                  font-family: inherit;
+                  font-size: inherit;
+                }
+                .meta-table th {
+                  background: #f5f5f5;
+                  font-weight: bold;
+                  text-align: center;
+                  font-size: 12px;
+                }
+
+                /* Validación - fondo rojo cuando alcanza límite */
+                .ficha-input.at-limit {
+                  background-color: #ffcccc !important;
+                }
+
+                /* Bloqueo - fondo verde */
+                .locked {
+                  background-color: #ccffcc !important;
+                }
+                .meta-table .locked {
+                  cursor: not-allowed;
+                }
+              </style>
+
+              <div class="modulo-header">
+                <button
+                  class="btn create-modulo"
+                  style="
+                    padding: 4px 10px;
+                    font-size: 12px;
+                    white-space: nowrap;
+                  "
+                >
+                  Crear módulo
+                </button>
+                <input
+                  type="text"
+                  class="modulo-nombre"
+                  maxlength="30"
+                  placeholder="Ej. Puerta armario"
+                />
+              </div>
+
+              <table class="meta-table">
+                <thead>
+                  <tr class="row-header">
+                    <th class="col-cant">Cant.</th>
+                    <th class="col-largo">Largo</th>
+                    <th class="col-ancho">Ancho</th>
+                    <th class="col-cantl">CantL</th>
+                    <th class="col-canta">CantA</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="row-datos">
+                    <td class="col-cant">
+                      <input type="number" min="0" value="1" class="cantidad" />
+                    </td>
+                    <td class="col-largo">
+                      <input type="text" class="med1" maxlength="5" />
+                    </td>
+                    <td class="col-ancho">
+                      <input type="text" class="med2" maxlength="5" />
+                    </td>
+                    <td class="col-cantl">
+                      <input
+                        type="number"
+                        min="0"
+                        max="2"
+                        class="canto-num-med1"
+                        value="0"
+                        maxlength="1"
+                        disabled
+                      />
+                    </td>
+                    <td class="col-canta">
+                      <input
+                        type="number"
+                        min="0"
+                        max="2"
+                        class="canto-num-med2"
+                        value="0"
+                        maxlength="1"
+                        disabled
+                      />
+                    </td>
+                  </tr>
+                  <tr class="row-prof">
+                    <th colspan="5" style="text-align: left">
+                      <label style="margin: 0">Prof:</label>
+                      <input
+                        type="text"
+                        class="ficha-input profundidad-tabla"
+                        maxlength="10"
+                        style="
+                          width: calc(100% - 90px);
+                          display: inline-block;
+                          margin-left: 28px;
+                        "
+                      />
+                    </th>
+                  </tr>
+                  <tr class="row-nombre">
+                    <th colspan="5" style="text-align: left">
+                      <label style="margin: 0">Nombre:</label>
+                      <input
+                        type="text"
+                        class="ficha-input nombre-tabla"
+                        maxlength="15"
+                        style="
+                          width: calc(100% - 90px);
+                          display: inline-block;
+                          margin-left: 8px;
+                        "
+                      />
+                    </th>
+                  </tr>
+                  <tr class="row-notas">
+                    <th colspan="5" style="text-align: left">
+                      <label style="margin: 0">Notas:</label>
+                      <textarea
+                        class="ficha-input notas"
+                        rows="1"
+                        maxlength="20"
+                        style="
+                          width: calc(100% - 90px);
+                          display: inline-block;
+                          margin-left: 8px;
+                          box-sizing: border-box;
+                          resize: none;
+                          font-size: 12px;
+                          line-height: 1;
+                          padding: 2px;
+                          height: 20px;
+                          vertical-align: middle;
+                        "
+                      ></textarea>
+                    </th>
+                  </tr>
+                </tbody>
+              </table>
+
+              <label
+                ><strong>Enchapado / Canto</strong>
+                <button
+                  id="toggle-canto-mode"
+                  class="btn ghost"
+                  style="margin-left: 8px; padding: 4px 10px; font-size: 12px"
+                >
+                  Modo numérico
+                </button>
+              </label>
+
+              <div id="canto-grafico">
+                <div class="cuadro-wrap">
+                  <span class="cuadro-label-top">Med1</span>
+                  <span class="cuadro-label-right">Med2</span>
+
+                  <div
+                    class="cuadro"
+                    title="Clic cerca del borde para seleccionar canto"
+                  >
+                    <div class="lado top"></div>
+                    <div class="lado right"></div>
+                    <div class="lado bottom"></div>
+                    <div class="lado left"></div>
+                  </div>
+                </div>
+              </div>
+
+              <small class="name-counter">0/15</small>
+              <small class="name-warning">Máximo 15</small>
+
+              <small class="note-counter">0/20</small>
+              <small class="note-warning">Máximo 20</small>
+
+              <div class="panel-buttons">
+                <button class="btn accept">Aceptar</button>
+                <button class="btn ghost back-modulo">Atrás</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="tm-footer-note">
+        La página representa una hoja A4 lista para imprimir.
+      </p>
+    </div>
+
+    <footer class="tm-footer">
+      <span>&copy; 2020 Your Company</span>
+      <span>Web Designed by TemplateMo</span>
+    </footer>
+
+    <script src="Hoja_A4/hojaA4.js"></script>
+    <script src="guardar_datos_v2.js"></script>
+
+    <!-- POPUP PARA DIBUJAR -->
+    <!-- Popup de editar pieza -->
+    <div id="popup-editar" class="popup-overlay" style="display: none">
+      <div class="popup-window small">
+        <div class="popup-header">
+          <h3>Editar pieza</h3>
+          <button class="popup-close" id="editar-close">&times;</button>
+        </div>
+
+        <div
+          class="popup-edit-top"
+          style="
+            padding: 8px;
+            background: #f7f7f7;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+          <!-- botones superiores: radio, angulo, calado -->
+          <button
+            id="editar-tool-radius"
+            class="edit-tool"
+            style="
+              padding: 8px 16px;
+              background: #fff;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              cursor: pointer;
+            "
+          >
+            Radio
+          </button>
+          <button
+            id="editar-tool-angle"
+            class="edit-tool"
+            style="
+              padding: 8px 16px;
+              background: #fff;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              cursor: pointer;
+            "
+          >
+            Ángulo
+          </button>
+          <button
+            id="editar-tool-cut"
+            class="edit-tool"
+            style="
+              padding: 8px 16px;
+              background: #fff;
+              border: 1px solid #ccc;
+              border-radius: 4px;
+              cursor: pointer;
+            "
+          >
+            Calado
+          </button>
+        </div>
+
+        <!-- barra de herramientas flotantes para puntos -->
+        <div
+          style="
+            padding: 8px;
+            background: #f7f7f7;
+            display: flex;
+            gap: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+          <button
+            id="editar-tool-points"
+            class="tb-btn"
+            style="
+              width: 40px;
+              height: 40px;
+              background: #fff;
+              border: 1px solid #ccc;
+              border-radius: 6px;
+              cursor: pointer;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+            "
+          >
+            <i class="fas fa-circle"></i>
+          </button>
+        </div>
+
+        <div
+          class="popup-edit-body"
+          style="
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            height: calc(100% - 124px);
+            box-sizing: border-box;
+          "
+        >
+          <div
+            class="edit-controls"
+            style="
+              width: 280px;
+              overflow-y: auto;
+              padding-right: 8px;
+              background: #f8f8f8;
+              border: 1px solid #e0e0e0;
+              border-radius: 4px;
+              padding: 10px;
+            "
+          >
+            <div id="radius-controls" class="control-group">
+              <label
+                style="display: block; margin-bottom: 10px; font-weight: bold"
+              >
+                Esquina:
+                <select
+                  id="radius-corner"
+                  style="width: 100%; padding: 6px; margin-top: 4px"
+                >
+                  <option value="tl">Superior Izquierda</option>
+                  <option value="tr">Superior Derecha</option>
+                  <option value="br">Inferior Derecha</option>
+                  <option value="bl">Inferior Izquierda</option>
+                </select>
+              </label>
+              <label style="display: block; margin-bottom: 10px">
+                Radio:
+                <input
+                  id="radius-value"
+                  type="range"
+                  min="0"
+                  max="300"
+                  value="8"
+                  style="width: 100%; margin-top: 4px"
+                />
+                <span id="radius-display" style="font-size: 12px; color: #666"
+                  >8</span
+                >
+              </label>
+              <button
+                id="editar-revertir"
+                style="
+                  padding: 8px 12px;
+                  background: #fff;
+                  border: 1px solid #ccc;
+                  border-radius: 4px;
+                  cursor: pointer;
+                  width: 100%;
+                  margin-top: 10px;
+                "
+              >
+                Revertir
+              </button>
+            </div>
+
+            <div
+              id="angle-controls"
+              class="control-group"
+              style="display: none"
+            >
+              <label
+                style="display: block; margin-bottom: 10px; font-weight: bold"
+              >
+                Esquina:
+                <select
+                  id="angle-corner"
+                  style="width: 100%; padding: 6px; margin-top: 4px"
+                >
+                  <option value="tl">Superior Izquierda</option>
+                  <option value="tr">Superior Derecha</option>
+                  <option value="br">Inferior Derecha</option>
+                  <option value="bl">Inferior Izquierda</option>
+                </select>
+              </label>
+              <label style="display: block; margin-bottom: 10px">
+                Desplazar:
+                <input
+                  id="angle-value"
+                  type="number"
+                  min="0"
+                  max="10000"
+                  value="0"
+                  style="width: 100%; padding: 6px; margin-top: 4px"
+                />
+              </label>
+              <label style="display: block; margin-bottom: 10px">
+                Girar:
+                <input
+                  id="angle-rotate"
+                  type="number"
+                  min="-90"
+                  max="90"
+                  value="0"
+                  style="width: 100%; padding: 6px; margin-top: 4px"
+                />
+              </label>
+            </div>
+
+            <div id="cut-controls" class="control-group" style="display: none">
+              <p style="font-size: 13px; margin: 0 0 10px 0">
+                Dibuja dentro del preview para crear un agujero.
+              </p>
+              <button
+                id="cut-clear"
+                style="
+                  padding: 8px 12px;
+                  background: #ff6b6b;
+                  color: #fff;
+                  border: none;
+                  border-radius: 4px;
+                  cursor: pointer;
+                  width: 100%;
+                "
+              >
+                Limpiar trazos
+              </button>
+
+              <div style="display: flex; gap: 8px; margin-top: 10px">
+                <button
+                  id="cut-undo"
+                  title="Deshacer"
+                  style="
+                    flex: 1;
+                    padding: 8px;
+                    background: #0096ff;
+                    color: #fff;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 16px;
+                  "
+                >
+                  ↶
+                </button>
+                <button
+                  id="cut-redo"
+                  title="Rehacer"
+                  style="
+                    flex: 1;
+                    padding: 8px;
+                    background: #0096ff;
+                    color: #fff;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 16px;
+                  "
+                >
+                  ↷
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="edit-preview"
+            style="
+              flex: 1;
+              display: flex;
+              align-items: stretch;
+              justify-content: center;
+              background: #fafafa;
+              border: 1px solid #ddd;
+              border-radius: 4px;
+            "
+          >
+            <div
+              id="edit-grid"
+              style="
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: #f5f5f5;
+                background-image:
+                  linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+                  linear-gradient(
+                    90deg,
+                    rgba(0, 0, 0, 0.03) 1px,
+                    transparent 1px
+                  );
+                background-size: 40px 40px;
+                display: flex;
+                align-items: stretch;
+                justify-content: stretch;
+              "
+            >
+              <canvas
+                id="edit-canvas"
+                width="600"
+                height="400"
+                style="
+                  border: 1px solid #ccc;
+                  background: #e8e8e8;
+                  cursor: crosshair;
+                  display: block;
+                  width: 100%;
+                  height: 100%;
+                "
+              ></canvas>
+            </div>
+          </div>
+
+          <div
+            id="cut-exact-panel"
+            style="
+              width: 240px;
+              overflow-y: auto;
+              padding: 12px;
+              background: #f8f8f8;
+              border: 1px solid #e0e0e0;
+              border-radius: 4px;
+              display: none;
+            "
+          >
+            <h4 style="margin: 0 0 12px 0; font-size: 14px; font-weight: bold">
+              Cotas (px)
+            </h4>
+
+            <!-- Layout de dos columnas: Cotas y Radios -->
+            <div style="display: flex; gap: 8px">
+              <!-- Columna Cotas -->
+              <div style="flex: 1">
+                <label
+                  style="display: block; margin-bottom: 6px; font-size: 11px"
+                >
+                  Superior:<br />
+                  <input
+                    type="number"
+                    id="cut-exact-y"
+                    placeholder="Sup"
+                    min="0"
+                    value="0"
+                    disabled
+                    style="
+                      width: 100%;
+                      padding: 4px;
+                      border: 1px solid #ccc;
+                      border-radius: 3px;
+                      font-size: 11px;
+                      box-sizing: border-box;
+                    "
+                  />
+                </label>
+                <label
+                  style="display: block; margin-bottom: 6px; font-size: 11px"
+                >
+                  Inferior:<br />
+                  <input
+                    type="number"
+                    id="cut-exact-h"
+                    placeholder="Inf"
+                    min="0"
+                    value="0"
+                    disabled
+                    style="
+                      width: 100%;
+                      padding: 4px;
+                      border: 1px solid #ccc;
+                      border-radius: 3px;
+                      font-size: 11px;
+                      box-sizing: border-box;
+                    "
+                  />
+                </label>
+                <label
+                  style="display: block; margin-bottom: 6px; font-size: 11px"
+                >
+                  Izquierda:<br />
+                  <input
+                    type="number"
+                    id="cut-exact-x"
+                    placeholder="Izq"
+                    min="0"
+                    value="0"
+                    disabled
+                    style="
+                      width: 100%;
+                      padding: 4px;
+                      border: 1px solid #ccc;
+                      border-radius: 3px;
+                      font-size: 11px;
+                      box-sizing: border-box;
+                    "
+                  />
+                </label>
+                <label
+                  style="display: block; margin-bottom: 6px; font-size: 11px"
+                >
+                  Derecha:<br />
+                  <input
+                    type="number"
+                    id="cut-exact-w"
+                    placeholder="Der"
+                    min="0"
+                    value="0"
+                    disabled
+                    style="
+                      width: 100%;
+                      padding: 4px;
+                      border: 1px solid #ccc;
+                      border-radius: 3px;
+                      font-size: 11px;
+                      box-sizing: border-box;
+                    "
+                  />
+                </label>
+              </div>
+
+              <!-- Columna Radios de Esquinas -->
+              <div style="flex: 1">
+                <label
+                  style="display: block; margin-bottom: 6px; font-size: 11px"
+                >
+                  Radio TL:<br />
+                  <input
+                    type="number"
+                    id="cut-corner-tl"
+                    placeholder="0"
+                    min="0"
+                    value="0"
+                    disabled
+                    style="
+                      width: 100%;
+                      padding: 4px;
+                      border: 1px solid #ccc;
+                      border-radius: 3px;
+                      font-size: 11px;
+                      box-sizing: border-box;
+                    "
+                  />
+                </label>
+                <label
+                  style="display: block; margin-bottom: 6px; font-size: 11px"
+                >
+                  Radio TR:<br />
+                  <input
+                    type="number"
+                    id="cut-corner-tr"
+                    placeholder="0"
+                    min="0"
+                    value="0"
+                    disabled
+                    style="
+                      width: 100%;
+                      padding: 4px;
+                      border: 1px solid #ccc;
+                      border-radius: 3px;
+                      font-size: 11px;
+                      box-sizing: border-box;
+                    "
+                  />
+                </label>
+                <label
+                  style="display: block; margin-bottom: 6px; font-size: 11px"
+                >
+                  Radio BL:<br />
+                  <input
+                    type="number"
+                    id="cut-corner-bl"
+                    placeholder="0"
+                    min="0"
+                    value="0"
+                    disabled
+                    style="
+                      width: 100%;
+                      padding: 4px;
+                      border: 1px solid #ccc;
+                      border-radius: 3px;
+                      font-size: 11px;
+                      box-sizing: border-box;
+                    "
+                  />
+                </label>
+                <label
+                  style="display: block; margin-bottom: 6px; font-size: 11px"
+                >
+                  Radio BR:<br />
+                  <input
+                    type="number"
+                    id="cut-corner-br"
+                    placeholder="0"
+                    min="0"
+                    value="0"
+                    disabled
+                    style="
+                      width: 100%;
+                      padding: 4px;
+                      border: 1px solid #ccc;
+                      border-radius: 3px;
+                      font-size: 11px;
+                      box-sizing: border-box;
+                    "
+                  />
+                </label>
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center">
+              <button
+                id="cut-create"
+                title="Crear calado"
+                style="
+                  flex: 1;
+                  padding: 10px;
+                  background: #007bff;
+                  color: #fff;
+                  border: none;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  font-size: 18px;
+                  font-weight: bold;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <i class="fas fa-plus"></i>
+              </button>
+              <button
+                id="cut-exact-delete"
+                title="Eliminar"
+                style="
+                  flex: 1;
+                  padding: 10px;
+                  background: #f44336;
+                  color: #fff;
+                  border: none;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  font-size: 18px;
+                  font-weight: bold;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="popup-footer"
+          style="
+            padding: 12px;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            border-top: 1px solid #ddd;
+          "
+        >
+          <button
+            id="editar-apply"
+            class="btn"
+            style="
+              padding: 10px 20px;
+              background: #0080ff;
+              color: #fff;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+            "
+          >
+            Aplicar
+          </button>
+          <button
+            id="editar-cancel"
+            class="btn ghost"
+            style="
+              padding: 10px 20px;
+              background: #ccc;
+              color: #000;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+            "
+          >
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="popup-dibujo" class="popup-overlay">
+      <div class="popup-window">
+        <div class="popup-header">
+          <h3>Dibujar mueble</h3>
+          <button class="popup-close">&times;</button>
+        </div>
+
+        <div id="popup-tools" class="popup-tools">
+          <button id="tool-export">Exportar</button>
+        </div>
+
+        <div class="toolbar">
+          <!-- Botón de seleccion -->
+          <button id="tool-mouse" class="tb-btn" title="seleccionar piezas">
+            <i class="fas fa-mouse-pointer"></i>
+          </button>
+
+          <!-- Botón de detalles -->
+          <button id="tool-toggle-detalles" class="tb-btn" title="Detalles">
+            <i class="fas fa-eye"></i>
+          </button>
+
+          <!-- Botón de pegado automatico -->
+          <button id="tool-snap" class="tb-btn" title="Pegado automático">
+            <i class="fas fa-magnet"></i>
+            <span id="snap-state"></span>
+          </button>
+
+          <button
+            id="tool-color"
+            class="tb-btn"
+            title="Seleccionar color de pieza"
+          >
+            <i class="fas fa-palette"></i>
+          </button>
+
+          <!-- Botón para mostrar slider de transparencia -->
+          <button id="tool-alpha" class="tb-btn" title="Transparencia">
+            <i class="fas fa-adjust"></i>
+          </button>
+
+          <!-- Botón para perspectiva -->
+          <button id="tool-persp" class="tb-btn" title="Perspectiva">
+            <i class="fas fa-cube"></i>
+          </button>
+
+          <!-- Select antiguo de perspectiva - reemplazado por botón con dropdown -->
+          <!-- <select id="tool-view">
+        <option value="" disabled selected hidden>Perspectiva</option>
+        <option value="front">Frontal</option>
+        <option value="side">Lateral</option>
+        <option value="top">Superior</option>
+      </select> -->
+
+          <button id="tool-medir" class="tb-btn" title="Medir">
+            <i class="fas fa-ruler-combined"></i>
+          </button>
+
+          <button id="tool-text" class="tb-btn" title="Agregar texto">
+            <i class="fas fa-font"></i>
+          </button>
+
+          <button class="tb-btn tb-cotas" title="Cotas">
+            <div class="cota-compacta">
+              <i class="fas fa-chevron-left"></i>
+              <span class="cota-texto">12mm</span>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+          </button>
+
+          <button id="tool-crear-linea" class="tb-btn" title="Crear líneas">
+            <i class="fas fa-minus"></i>
+          </button>
+
+          <button id="tool-delete" class="tb-btn" title="Eliminar selección">
+            <i class="fas fa-trash"></i>
+          </button>
+
+          <!-- Botón de duplicar selección -->
+          <button id="tool-duplicate" class="tb-btn" title="Duplicar selección">
+            <i class="fas fa-copy"></i>
+          </button>
+
+          <!-- Botones de espejo -->
+          <button
+            id="tool-mirror-left"
+            class="tb-btn"
+            title="Reflejar a la izquierda"
+          >
+            <i class="fas fa-arrows-alt-h"></i>
+          </button>
+          <button
+            id="tool-mirror-right"
+            class="tb-btn"
+            title="Reflejar a la derecha"
+          >
+            <i class="fas fa-exchange-alt"></i>
+          </button>
+
+          <!-- Botón de rotar pieza -->
+          <button id="tool-rotate" class="tb-btn" title="Rotar 90°">
+            <i class="fas fa-redo"></i>
+          </button>
+
+          <!-- Botón de editar pieza -->
+          <button id="tool-editar" class="tb-btn" title="Editar pieza">
+            <i class="fas fa-pencil-alt"></i>
+          </button>
+        </div>
+
+        <div class="popup-content">
+          <div id="popup-left">
+            <h4>Piezas y módulos</h4>
+            <div id="popup-left-list"></div>
+          </div>
+
+          <div id="gridWrapper">
+            <div id="gridArea">
+              <div id="snap-line-x"></div>
+              <div id="snap-line-y"></div>
+            </div>
+          </div>
+
+          <div
+            id="popup-right"
+            style="
+              width: 240px;
+              background: #f8f8f8;
+              border-left: 1px solid #e0e0e0;
+              padding: 10px;
+              overflow-y: auto;
+              border-radius: 6px;
+            "
+          >
+            <!-- Panel derecho reservado para futuras funciones -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="Herramientas/H_dubujarmueble/P/popup.js"></script>
+    <script src="Herramientas/H_dubujarmueble/P/popupcuadricula.js"></script>
+    <script src="Herramientas/H_dubujarmueble/P/piezas_cuadricula.js"></script>
+    <script src="Herramientas/H_dubujarmueble/P/panel_piezas_cuadricula.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_seleccionar.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_papelera.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_rotar.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_detalles.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_pegadoAutomatico.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_color.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_transparencia.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_persepctivas.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_exportar.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_medir.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_crear linea.js"></script>
+    <script src="Herramientas/H_editar/editar_cuadricula.js"></script>
+    <script src="Herramientas/H_editar/popupeditar.js"></script>
+    <script src="Herramientas/H_editar/editar_pieza_cuadricula.js"></script>
+    <script src="Herramientas/H_editar/Panel_superior/P_radio.js"></script>
+    <script src="Herramientas/H_editar/Panel_superior/P_angulo.js"></script>
+    <script src="Herramientas/H_editar/Panel_superior/P_calados.js"></script>
+    <script src="Herramientas/H_editar/Panel_Izquierdo/P_calados/Pc_calado_medido.js"></script>
+    <script src="Herramientas/H_editar/Panel_Izquierdo/P_calados/Pc_calado_seleccion.js"></script>
+    <script src="Herramientas/H_editar/Panel_Herramientas/PH_puntos.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_editar.js"></script>
+    <script src="Herramientas/H_dubujarmueble/P/panel_piezas_popup.js"></script>
+    <script src="Herramientas/H_dubujarmueble/P/cursor_virtual.js"></script>
+    <script src="Herramientas/H_dubujarmueble/H/H_texto.js"></script>
+
+    <script>
+      (function () {
+        function ensureTickElement() {
+          const label = document.getElementById("proyecto-actual-label");
+          if (!label) return null;
+          let tick = document.getElementById("autosave-tick");
+          if (!tick) {
+            tick = document.createElement("span");
+            tick.id = "autosave-tick";
+            tick.style.display = "inline-block";
+            tick.style.width = "12px";
+            tick.style.height = "12px";
+            tick.style.marginLeft = "8px";
+            tick.style.borderRadius = "50%";
+            tick.style.background = "#28a745";
+            tick.style.opacity = "0";
+            tick.style.transition = "opacity 0.18s ease";
+            tick.style.verticalAlign = "middle";
+            label.appendChild(tick);
+          }
+          return tick;
+        }
+
+        function flashTick() {
+          const tick = ensureTickElement();
+          if (!tick) return;
+          tick.style.opacity = "1";
+          setTimeout(() => {
+            tick.style.opacity = "0";
+          }, 800);
+        }
+
+        function iniciarAutoguardado() {
+          if (
+            !window.GuardarDatos ||
+            !window.GuardarDatos.guardarCopiaRecuperacion
+          ) {
+            setTimeout(iniciarAutoguardado, 800);
+            return;
+          }
+
+          // Ejecutar cada 5s y mostrar tick si el guardado fue exitoso
+          setInterval(() => {
+            try {
+              const res = window.GuardarDatos.guardarCopiaRecuperacion();
+              if (res && res.exito) {
+                flashTick();
+                console.log("✅ Autoguardado OK");
+              }
+            } catch (err) {
+              console.error("Error en autoguardado:", err);
+            }
+          }, 5000);
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", iniciarAutoguardado);
+        } else {
+          iniciarAutoguardado();
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        const btnInicio = document.getElementById("inicio");
+        if (btnInicio) {
+          btnInicio.addEventListener("click", (event) => {
+            event.preventDefault();
+            window.location.href = "index.html";
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>

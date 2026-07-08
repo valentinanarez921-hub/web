@@ -1,0 +1,81 @@
+<!-- Diagnóstico de H_crear linea.js -->
+<html>
+<head>
+  <title>Diagnóstico Crear Línea</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    #gridArea { width: 600px; height: 400px; border: 2px solid #ccc; position: relative; }
+    button { padding: 10px 20px; margin: 10px 0; cursor: pointer; }
+    button.activo { background: #ff6b00; color: white; }
+    #log { border: 1px solid #ddd; padding: 10px; margin-top: 20px; max-height: 300px; overflow-y: auto; font-size: 12px; }
+    .log-entry { padding: 2px; border-bottom: 1px solid #eee; }
+  </style>
+</head>
+<body>
+  <h1>Diagnóstico: H_crear linea.js</h1>
+  
+  <button id="tool-crear-linea">Crear Línea</button>
+  <button id="tool-mouse">Seleccionar (para simular otro script)</button>
+  
+  <div id="gridArea" style="background: #f9f9f9;">
+    <!-- SVG se agregará aquí -->
+  </div>
+  
+  <div id="log"></div>
+
+  <script>
+    // Logging personalizado
+    const logDiv = document.getElementById('log');
+    const originalLog = console.log;
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.textContent = '[' + new Date().toLocaleTimeString() + '] ' + 
+        args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    };
+    
+    // Simular Grid
+    window.Grid = {
+      scale: () => 1,
+      offset: () => ({ x: 0, y: 0 })
+    };
+    
+    console.log('=== DIAGNÓSTICO INICIADO ===');
+    console.log('DOM ready:', document.readyState);
+    console.log('gridArea existe:', !!document.getElementById('gridArea'));
+    console.log('tool-crear-linea existe:', !!document.getElementById('tool-crear-linea'));
+    
+    // Log cuando se carga el script
+    window.addEventListener('message', (e) => {
+      if (e.data && e.data.type === 'linea') {
+        console.log('EVENT:', e.data.message);
+      }
+    });
+  </script>
+
+  <!-- Cargar H_crear linea -->
+  <script src="Herramientas/H_dubujarmueble/H/H_crear linea.js"></script>
+  
+  <script>
+    // Verificar que se cargó
+    setTimeout(() => {
+      console.log('');
+      console.log('=== VERIFICACIÓN POST-CARGA ===');
+      console.log('window.CrearLinea existe:', !!window.CrearLinea);
+      console.log('window._crearLineaLoaded:', window._crearLineaLoaded);
+      console.log('svg-lineas existe:', !!document.getElementById('svg-lineas'));
+      console.log('crear-linea-overlay existe:', !!document.getElementById('crear-linea-overlay'));
+      
+      // Simular click en botón
+      console.log('');
+      console.log('=== PROBANDO ACTIVACIÓN ===');
+      document.getElementById('tool-crear-linea').click();
+      console.log('Overlay visible:', document.getElementById('crear-linea-overlay')?.style.display);
+      
+    }, 500);
+  </script>
+</body>
+</html>
